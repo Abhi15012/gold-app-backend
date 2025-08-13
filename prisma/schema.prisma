@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model userContact {
+  id          String       @id @default(uuid())
+  firstName   String
+  lastName    String
+  CountryCode String
+  mobile      String       @unique
+  address     String?
+  createdAt   DateTime     @default(now())
+  isVerified  Boolean      @default(true)
+  isWhatsApp  Boolean      @default(false)
+  addFavorite addFavorite?
+}
+
+model expoPushToken {
+  id         String    @id @default(uuid())
+  expoToken  String    @unique
+  deviceName String?
+  modelName  String?
+  osVersion  String?
+  osName     String?
+  deviceType Int?
+  deviceId   String?   @unique
+  lastSeen   DateTime?
+}
+
+model addFavorite {
+  id          String      @id @default(uuid())
+  userId      String      @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  userContact userContact @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
