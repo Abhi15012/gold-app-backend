@@ -141,8 +141,13 @@ return res
 
 }
 
-export const getFavoriteCustomer =async()=>{
+
+
+export const getFavoriteCustomers =async()=>{
   const data = await prisma.addFavorite.findMany()
   return data
 }
+
+
+
 

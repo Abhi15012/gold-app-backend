@@ -1,10 +1,10 @@
 
 import { error } from './../node_modules/effect/src/Brand';
 
-import {  deleteUserContactSchema, expoPushTokenSchema, sendOtpSchema, userContactSchema } from "./schema";
+import {  addFavoriteSchema, deleteUserContactSchema, expoPushTokenSchema, sendOtpSchema, userContactSchema } from "./schema";
 import { z } from "zod";
 import  { userContactType } from "./types";
-import { adminNotifications, createUserContact, deleteUserContact, getUsersData, sendOtp } from "./services";
+import { addFavoriteCustomer, adminNotifications, createUserContact, deleteUserContact, getFavoriteCustomers, getUsersData, sendOtp } from "./services";
 import { Request, Response } from "express";
 import { sendPushNotificationFunction } from '../utils/functions';
 
@@ -163,3 +163,56 @@ export const getUsersDataController = async (req: Request, res: Response) => {
         });
     }   
 };
+
+
+export const addFavoriteCustomers=async(req:Request,res:Response)=>{
+
+    const parsedData= addFavoriteSchema.safeParse(req.body)
+    if(!parsedData.success){
+        return res.status(400).json({
+            message: "Invalid input data",
+            errors: parsedData.error,
+        });
+    }
+     const { id, userId, createdAt, updatedAt, userContact } = parsedData.data;
+    try {
+        const favorite = await addFavoriteCustomer(userId);
+        res.status(200).json({
+            message: "Favorite customer added successfully",
+            data: favorite,
+        });
+
+
+
+    } catch (error) {
+        console.error("Error adding favorite customer:", error);
+        if (error.name === "ConflictError") {
+            return res.status(409).json({
+                message: error.message,
+            });
+        }
+        res.status(500).json({
+            message: "Failed to add favorite customer",
+            error: error.message,
+        }); 
+    }
+}
+
+export const getFavorites = async(req: Request , res:Response)=>{
+     try {
+         const favUsers = await getFavoriteCustomers();
+         res.status(200).json({
+            message:"favorites retrived successfully",
+            data: favUsers
+         })
+
+     } catch (error) {
+           console.log("Error in retrieving favorites", error)
+
+                res.status(500).json({
+            message: "Failed to retrieve users data",
+            error: error.message,
+        });
+     }
+
+}
