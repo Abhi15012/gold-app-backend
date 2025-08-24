@@ -3,13 +3,17 @@ import { userContactType } from "./types";
 import { generateOtp, sendotpmsg } from '../utils/functions.js';
 
 const prisma = new PrismaClient();
-const redis = require('redis').createClient();
+import redis from "redis";
 
-redis.on('error', (err: any) => {
+const rediscli = redis.createClient({
+    url: process.env.REDIS_URL || "redis://localhost:6379"
+});
+
+rediscli.on('error', (err: any) => {
     console.error('Redis error:', err);
 });
 
-await redis.connect();
+await rediscli.connect();
 
 
 export const sendOtp = async (mobile: string, countryCode : string) => {
@@ -28,7 +32,7 @@ if (res) {
     try {
       const key  = `otp:${mobile}`;
     
-      await redis.set(key, otp, "EX", 300); // Store OTP for 5 minutes
+      await rediscli.set(key, otp, "EX", 300); // Store OTP for 5 minutes
       console.log(`OTP for ${mobile} stored in Redis: ${otp}`);
       await sendotpmsg(mobile, otp);
     console.log(`OTP sent to ${mobile}: ${otp}`);
