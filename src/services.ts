@@ -1,96 +1,95 @@
+// services.ts
 import { PrismaClient } from "@prisma/client";
-import { userContactType } from "./types";
-import { generateOtp, sendotpmsg } from '../utils/functions.js';
-
-const prisma = new PrismaClient();
+import { userContactType } from "./types.js";
+import { generateOtp, sendotpmsg } from "../utils/functions.js";
 import redis from "redis";
 
-const rediscli = redis.createClient({
-    url: process.env.REDIS_URL || "redis://localhost:6379"
+const prisma = new PrismaClient();
+
+// Redis client setup
+const redisClient = redis.createClient({
+  url: process.env.REDIS_URL || "redis://localhost:6379",
 });
 
-rediscli.on('error', (err: any) => {
-    console.error('Redis error:', err);
+redisClient.on("error", (err) => {
+  console.error("Redis error:", err);
 });
 
-await rediscli.connect();
+await redisClient.connect();
 
+// ===================== OTP =====================
+export const sendOtp = async (mobile: string, countryCode: string) => {
+  const otp = generateOtp();
 
-export const sendOtp = async (mobile: string, countryCode : string) => {
-    const otp = generateOtp();
-    const res=  await prisma.userContact.findUnique({
-    where: {
-      mobile:mobile,
-    },
-    });
-if (res) {
+  // Check if user already exists
+  const existingUser = await prisma.userContact.findUnique({
+    where: { mobile },
+  });
+
+  if (existingUser) {
     const error = new Error("User contact with this mobile number already exists");
-    
     error.name = "ConflictError";
     throw error;
   }
-    try {
-      const key  = `otp:${mobile}`;
-    
-      await rediscli.set(key, otp, "EX", 300); // Store OTP for 5 minutes
-      console.log(`OTP for ${mobile} stored in Redis: ${otp}`);
-      await sendotpmsg(mobile, otp);
+
+  try {
+    const key = `otp:${mobile}`;
+    await redisClient.set(key, otp, { EX: 300 }); // 5 minutes expiry
+    console.log(`OTP for ${mobile} stored in Redis: ${otp}`);
+
+    await sendotpmsg(mobile, otp);
     console.log(`OTP sent to ${mobile}: ${otp}`);
-    } catch (error) {
-      console.error("Error sending OTP:", error);
-      throw new Error("Failed to send OTP");
-    }
-    return otp;
+  } catch (err) {
+    console.error("Error sending OTP:", err);
+    throw new Error("Failed to send OTP");
   }
 
+  return otp;
+};
 
+// ===================== User Contact =====================
+export const createUserContact = async (data: userContactType) => {
+  const existing = await prisma.userContact.findUnique({
+    where: { mobile: data.mobile },
+  });
 
-
-export const createUserContact=async(data:userContactType)=>{
-const res=  await prisma.userContact.findUnique({
-    where: {
-      mobile: data.mobile,
-    },
-    });
-if (res) {
+  if (existing) {
     const error = new Error("User contact with this mobile number already exists");
-    
     error.name = "ConflictError";
     throw error;
   }
+
   console.log("Creating user contact with data:", data);
-await prisma.userContact.create({
+
+  await prisma.userContact.create({
     data: {
       fullName: data.fullName,
-        CountryCode: data.CountryCode,
-        mobile: data.mobile,
-        address: data.address,
-        isVerified: data.isVerified,
-        isWhatsApp: data.isWhatsApp,
+      CountryCode: data.CountryCode,
+      mobile: data.mobile,
+      address: data.address,
+      isVerified: data.isVerified,
+      isWhatsApp: data.isWhatsApp,
     },
   });
-}
+};
 
 export const getUsersData = async () => {
-  const users = await prisma.userContact.findMany();
-  return users;
-}
+  return await prisma.userContact.findMany();
+};
 
 export const deleteUserContact = async (id: string) => {
-  const user = await prisma.userContact.findUnique({
-    where: { id},
-  });
+  const user = await prisma.userContact.findUnique({ where: { id } });
   if (!user) {
     const error = new Error("User contact not found");
     error.name = "NotFoundError";
     throw error;
   }
-  await prisma.userContact.delete({
-    where: { id },
-  });
-  return { message: "User contact deleted successfully" };
-}
 
+  await prisma.userContact.delete({ where: { id } });
+  return { message: "User contact deleted successfully" };
+};
+
+// ===================== Expo Notifications =====================
 export const adminNotifications = async ({
   expoToken,
   deviceName,
@@ -109,9 +108,8 @@ export const adminNotifications = async ({
   deviceType?: number;
   deviceId?: string;
   lastSeen?: Date;
-
 }) => {
-   const expoNotifications = await prisma.expoPushToken.create({
+  return await prisma.expoPushToken.create({
     data: {
       expoToken,
       deviceName,
@@ -123,35 +121,20 @@ export const adminNotifications = async ({
       lastSeen: lastSeen || new Date(),
     },
   });
-  return expoNotifications;
-  
-}
+};
 
-export const addFavoriteCustomer = async (userId:string)=>{
-  const existingFavorite = await prisma.addFavorite.findUnique({
-    where: { userId },
-  });
-  if (existingFavorite) {
+// ===================== Favorites =====================
+export const addFavoriteCustomer = async (userId: string) => {
+  const existing = await prisma.addFavorite.findUnique({ where: { userId } });
+  if (existing) {
     const error = new Error("Favorite customer already exists for this user");
     error.name = "ConflictError";
     throw error;
   }
-const res=  await  prisma.addFavorite.create({
-    data:{
-      userId: userId
-    }
-  })
-return res
 
-}
+  return await prisma.addFavorite.create({ data: { userId } });
+};
 
-
-
-export const getFavoriteCustomers =async()=>{
-  const data = await prisma.addFavorite.findMany()
-  return data
-}
-
-
-
-
+export const getFavoriteCustomers = async () => {
+  return await prisma.addFavorite.findMany();
+};
