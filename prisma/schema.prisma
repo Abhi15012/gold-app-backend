@@ -15,8 +15,7 @@ datasource db {
 
 model userContact {
   id          String       @id @default(uuid())
-  firstName   String
-  lastName    String
+  fullName    String
   CountryCode String
   mobile      String       @unique
   address     String?

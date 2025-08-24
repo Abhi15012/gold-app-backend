@@ -4,8 +4,7 @@ import z from "zod";
 
 export const userContactSchema = z
   .object({
-    firstName: z.string(),
-    lastName: z.string(),
+    fullName: z.string(),
     CountryCode: z.string(),
     mobile: z.string(),
     address: z.string().optional(),

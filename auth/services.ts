@@ -55,14 +55,15 @@ if (res) {
     error.name = "ConflictError";
     throw error;
   }
-
+  console.log("Creating user contact with data:", data);
 await prisma.userContact.create({
     data: {
-      firstName: data.firstName,
-        lastName: data.lastName,
+      fullName: data.fullName,
         CountryCode: data.CountryCode,
         mobile: data.mobile,
         address: data.address,
+        isVerified: data.isVerified,
+        isWhatsApp: data.isWhatsApp,
     },
   });
 }

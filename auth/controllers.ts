@@ -27,6 +27,7 @@ export const userContactController =(req:Request,res: Response)=>{
 
 
     const userContactData: userContactType = parsedData.data;
+    console.log("User contact data:", userContactData);
     createUserContact(userContactData)
         .then(() => {
             res.status(200).json({

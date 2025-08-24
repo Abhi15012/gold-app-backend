@@ -13,7 +13,6 @@ router.post("/sendotp", rateLimiter, sendOtpController);
 // admin routes
 router.delete("/admin/deleteusercontact",deleteUserContactController);
 router.get("/admin/userDetails", getUsersDataController);
-
 router.post ("/admin/notifications",expoPushTokenController);
 router.post("/admin/add-favorites",addFavoriteCustomers);
 router.get("/admin/favorites",getFavorites)
