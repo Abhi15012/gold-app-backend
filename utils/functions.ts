@@ -1,4 +1,4 @@
-import { SendPushNotification } from "./pushNotifications";
+import { SendPushNotification } from "./pushNotifications.js";
 import  { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
