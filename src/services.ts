@@ -1,4 +1,3 @@
-import { send } from './services';
 import { PrismaClient } from "@prisma/client";
 import { userContactType } from "./types";
 import { generateOtp, sendotpmsg } from '../utils/functions';
