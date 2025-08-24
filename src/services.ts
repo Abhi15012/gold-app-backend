@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { userContactType } from "./types";
-import { generateOtp, sendotpmsg } from '../utils/functions';
+import { generateOtp, sendotpmsg } from '../utils/functions.js';
 
 const prisma = new PrismaClient();
 const redis = require('redis').createClient();

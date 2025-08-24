@@ -1,5 +1,3 @@
-import { id } from "zod/locales";
-import { sendOtp } from "./services";
 import z from "zod";
 
 export const userContactSchema = z

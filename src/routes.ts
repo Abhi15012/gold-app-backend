@@ -1,6 +1,6 @@
 import {Router} from "express";
-import { addFavoriteCustomers, deleteUserContactController, expoPushTokenController, getFavorites, getUsersDataController, sendOtpController, userContactController } from "./controllers";
-import { rateLimiter } from "./middleware";
+import { addFavoriteCustomers, deleteUserContactController, expoPushTokenController, getFavorites, getUsersDataController, sendOtpController, userContactController } from "./controllers.js";
+import { rateLimiter } from "./middleware.js";
 
 
 const router = Router();

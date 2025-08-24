@@ -4,7 +4,7 @@ import {
   expoPushTokenSchema, 
   sendOtpSchema, 
   userContactSchema 
-} from "./schema";
+} from "./schema.js";
 import { z } from "zod";
 import { userContactType } from "./types";
 import { 
@@ -15,9 +15,9 @@ import {
   getFavoriteCustomers, 
   getUsersData, 
   sendOtp 
-} from "./services";
+} from "./services.js";
 import { Request, Response } from "express";
-import { sendPushNotificationFunction } from "../utils/functions";
+import { sendPushNotificationFunction } from "../utils/functions.js";
 
 /**
  * Create User Contact
