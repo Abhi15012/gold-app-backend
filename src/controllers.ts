@@ -11,6 +11,8 @@ import {
   addFavoriteCustomer, 
   adminNotifications, 
   createUserContact, 
+  deleteAllData, 
+  deleteFavoriteCustomer, 
   deleteUserContact, 
   getFavoriteCustomers, 
   getUsersData, 
@@ -236,3 +238,65 @@ export const getFavorites = async (req: Request, res: Response) => {
     });
   }
 };
+
+/**
+ * Delete Favorite Customer
+ */
+export const deleteFavoriteCustomers = async (req: Request, res: Response) => {
+  const parsedData = z
+    .object({
+      id: z.string().uuid("Invalid favorite ID format"),
+    })
+    .safeParse(req.params);
+
+  if (!parsedData.success) {
+    return res.status(400).json({
+      message: "Invalid input data",
+      errors: parsedData.error,
+    });
+  }
+
+  const { id } = parsedData.data;
+
+  try {
+    const result = await deleteFavoriteCustomer(id);
+    res.status(200).json({
+      message: result.message,
+    });
+  } catch (err: unknown) {
+    const error = err as Error;
+    console.error("Error deleting favorite customer:", error);
+
+    if ((error as any).name === "NotFoundError") {
+      return res.status(404).json({
+        message: error.message,
+      });
+    }
+
+    res.status(500).json({
+      message: "Failed to delete favorite customer",
+      error: error.message,
+    });
+  }
+}
+
+
+export const deleteAllUsersController = async (req: Request, res: Response) => {
+  try {
+    const result = await deleteAllData();
+    res.status(200).json({
+      message: result.message,
+    });
+  } catch (err: unknown) {
+    const error = err as Error;
+    console.error("Error deleting all users:", error);
+    res.status(500).json({
+      message: "Failed to delete all users",
+      error: error.message,
+    });
+  }
+}
+
+
+
+

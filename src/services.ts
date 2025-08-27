@@ -138,3 +138,22 @@ export const addFavoriteCustomer = async (userId: string) => {
 export const getFavoriteCustomers = async () => {
   return await prisma.addFavorite.findMany();
 };
+
+export const deleteFavoriteCustomer = async (id: string) => {
+  const favorite = await prisma.addFavorite.findUnique({ where: { id } });
+  if (!favorite) {
+    const error = new Error("Favorite customer not found");
+    error.name = "NotFoundError";
+    throw error;
+  }
+
+  await prisma.addFavorite.delete({ where: { id } });
+  return { message: "Favorite customer deleted successfully" };
+};
+
+export const  deleteAllData = async () => {
+  await prisma.addFavorite.deleteMany();
+  await prisma.userContact.deleteMany();
+  return { message: "All data deleted successfully" };
+}
+

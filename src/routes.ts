@@ -1,5 +1,5 @@
 import {Router} from "express";
-import { addFavoriteCustomers, deleteUserContactController, expoPushTokenController, getFavorites, getUsersDataController, sendOtpController, userContactController } from "./controllers.js";
+import { addFavoriteCustomers, deleteAllUsersController, deleteFavoriteCustomers, deleteUserContactController, expoPushTokenController, getFavorites, getUsersDataController, sendOtpController, userContactController } from "./controllers.js";
 import { rateLimiter } from "./middleware.js";
 
 
@@ -16,4 +16,6 @@ router.get("/admin/userDetails", getUsersDataController);
 router.post ("/admin/notifications",expoPushTokenController);
 router.post("/admin/add-favorites",addFavoriteCustomers);
 router.get("/admin/favorites",getFavorites)
+router.delete("/admin/delete-favorite/:id",deleteFavoriteCustomers);
+router.delete("/admin/delete-all", deleteAllUsersController);
 export default router;

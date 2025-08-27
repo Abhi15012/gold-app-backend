@@ -53,3 +53,5 @@ export const addFavoriteSchema = z.object({
   // userContact is a relation, so you can add a nested schema or leave as optional
   userContact: z.any().optional(),
 });
+
+
