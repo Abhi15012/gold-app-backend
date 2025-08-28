@@ -28,7 +28,9 @@ export const sendOtp = async (mobile: string, countryCode: string) => {
   });
 
   if (existingUser) {
-    const error = new Error("User contact with this mobile number already exists");
+    const error = new Error(
+      "User contact with this mobile number already exists"
+    );
     error.name = "ConflictError";
     throw error;
   }
@@ -55,7 +57,9 @@ export const createUserContact = async (data: userContactType) => {
   });
 
   if (existing) {
-    const error = new Error("User contact with this mobile number already exists");
+    const error = new Error(
+      "User contact with this mobile number already exists"
+    );
     error.name = "ConflictError";
     throw error;
   }
@@ -79,8 +83,8 @@ export const getUsersData = async () => {
     const users = await prisma.userContact.findMany();
     const favourites = await prisma.addFavorite.findMany();
 
-    const favouritesData = new Set(favourites.map(fav => fav.userId));
-    const usersWithFavouriteStatus = users.map(user => ({
+    const favouritesData = new Set(favourites.map((fav) => fav.userId));
+    const usersWithFavouriteStatus = users.map((user) => ({
       ...user,
       isFavourite: favouritesData.has(user.id),
     }));
@@ -89,8 +93,6 @@ export const getUsersData = async () => {
     console.error("Error fetching user contacts:", error);
     throw new Error("Failed to fetch user contacts");
   }
-
-
 };
 
 export const deleteUserContact = async (id: string) => {
@@ -151,23 +153,25 @@ export const addFavoriteCustomer = async (userId: string) => {
   return await prisma.addFavorite.create({ data: { userId } });
 };
 
+export const deleteFavoriteCustomer = async (userId: string) => {
+  console.log("Deleting favorite customer with userId:", userId);
+  const favorite = await prisma.addFavorite.findUnique({
+    where: { userId},
+  });
+  console.log(await prisma.addFavorite.findMany(), "All favorites in DB");
 
-
-export const deleteFavoriteCustomer = async (id: string) => {
-  const favorite = await prisma.addFavorite.findUnique({ where: { id } });
   if (!favorite) {
     const error = new Error("Favorite customer not found");
     error.name = "NotFoundError";
     throw error;
   }
 
-  await prisma.addFavorite.delete({ where: { id } });
+  await prisma.addFavorite.delete({ where: { userId} });
   return { message: "Favorite customer deleted successfully" };
 };
 
-export const  deleteAllData = async () => {
+export const deleteAllData = async () => {
   await prisma.addFavorite.deleteMany();
   await prisma.userContact.deleteMany();
   return { message: "All data deleted successfully" };
-}
-
+};
