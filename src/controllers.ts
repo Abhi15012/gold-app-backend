@@ -243,24 +243,29 @@ export const getFavorites = async (req: Request, res: Response) => {
  * Delete Favorite Customer
  */
 export const deleteFavoriteCustomers = async (req: Request, res: Response) => {
+  console.log("Request query:", req.query);
+  console.log("Request params:", req.params);
+
+  // Merge query and params into a single object
   const parsedData = z
     .object({
       id: z.string().uuid("Invalid favorite ID format"),
     })
-    .safeParse(req.params);
+    .safeParse({ id: req.query.id });
 
   if (!parsedData.success) {
     return res.status(400).json({
       message: "Invalid input data",
-      errors: parsedData.error,
+      errors: parsedData.error.format(),
     });
   }
 
+  console.log("Parsed favorite ID:", parsedData.data.id);
   const { id } = parsedData.data;
 
   try {
     const result = await deleteFavoriteCustomer(id);
-    res.status(200).json({
+    return res.status(200).json({
       message: result.message,
     });
   } catch (err: unknown) {
@@ -268,17 +273,17 @@ export const deleteFavoriteCustomers = async (req: Request, res: Response) => {
     console.error("Error deleting favorite customer:", error);
 
     if ((error as any).name === "NotFoundError") {
-      return res.status(404).json({
-        message: error.message,
-      });
+      return res.status(404).json({ message: error.message });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to delete favorite customer",
       error: error.message,
     });
   }
-}
+};
+
+
 
 
 export const deleteAllUsersController = async (req: Request, res: Response) => {
