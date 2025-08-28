@@ -15,7 +15,6 @@ router.delete("/admin/deleteusercontact",deleteUserContactController);
 router.get("/admin/userDetails", getUsersDataController);
 router.post ("/admin/notifications",expoPushTokenController);
 router.post("/admin/add-favorites",addFavoriteCustomers);
-router.get("/admin/favorites",getFavorites)
 router.delete("/admin/delete-favorite",deleteFavoriteCustomers);
 router.delete("/admin/delete-all", deleteAllUsersController);
 export default router;

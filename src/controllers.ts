@@ -222,22 +222,7 @@ export const addFavoriteCustomers = async (req: Request, res: Response) => {
 /**
  * Get Favorites
  */
-export const getFavorites = async (req: Request, res: Response) => {
-  try {
-    const favUsers = await getFavoriteCustomers();
-    res.status(200).json({
-      message: "Favorites retrieved successfully",
-      data: favUsers,
-    });
-  } catch (err: unknown) {
-    const error = err as Error;
-    console.log("Error retrieving favorites:", error);
-    res.status(500).json({
-      message: "Failed to retrieve users data",
-      error: error.message,
-    });
-  }
-};
+
 
 /**
  * Delete Favorite Customer

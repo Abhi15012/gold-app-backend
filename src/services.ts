@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { userContactType } from "./types.js";
 import { generateOtp, sendotpmsg } from "../utils/functions.js";
 import redis from "redis";
+import fa from "zod/v4/locales/fa.cjs";
 
 const prisma = new PrismaClient();
 
@@ -74,7 +75,22 @@ export const createUserContact = async (data: userContactType) => {
 };
 
 export const getUsersData = async () => {
-  return await prisma.userContact.findMany();
+  try {
+    const users = await prisma.userContact.findMany();
+    const favourites = await prisma.addFavorite.findMany();
+
+    const favouritesData = new Set(favourites.map(fav => fav.userId));
+    const usersWithFavouriteStatus = users.map(user => ({
+      ...user,
+      isFavourite: favouritesData.has(user.id),
+    }));
+    return usersWithFavouriteStatus;
+  } catch (error) {
+    console.error("Error fetching user contacts:", error);
+    throw new Error("Failed to fetch user contacts");
+  }
+
+
 };
 
 export const deleteUserContact = async (id: string) => {
@@ -135,9 +151,7 @@ export const addFavoriteCustomer = async (userId: string) => {
   return await prisma.addFavorite.create({ data: { userId } });
 };
 
-export const getFavoriteCustomers = async () => {
-  return await prisma.addFavorite.findMany();
-};
+
 
 export const deleteFavoriteCustomer = async (id: string) => {
   const favorite = await prisma.addFavorite.findUnique({ where: { id } });
