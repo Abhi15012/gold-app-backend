@@ -14,7 +14,7 @@ import {
   deleteAllData, 
   deleteFavoriteCustomer, 
   deleteUserContact, 
-  getFavoriteCustomers, 
+
   getUsersData, 
   sendOtp 
 } from "./services.js";
