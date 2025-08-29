@@ -128,18 +128,11 @@ export const adminNotifications = async ({
   deviceId?: string;
   lastSeen?: Date;
 }) => {
-  return await prisma.expoPushToken.create({
-    data: {
-      expoToken,
-      deviceName,
-      modelName,
-      osVersion,
-      osName,
-      deviceType,
-      deviceId,
-      lastSeen: lastSeen || new Date(),
-    },
-  });
+return await prisma.expoPushToken.upsert({
+  where: { expoToken }, // must have a unique constraint on expoToken
+  update: {},           // nothing to update if exists
+  create: { expoToken }, // create if not exists
+});
 };
 
 // ===================== Favorites =====================
