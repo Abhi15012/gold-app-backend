@@ -1,3 +1,4 @@
+import { customerType } from './../node_modules/.prisma/client/index.d';
 import z from "zod";
 
 export const userContactSchema = z
@@ -5,6 +6,7 @@ export const userContactSchema = z
     fullName: z.string(),
     CountryCode: z.string(),
     mobile: z.string(),
+    customerType: z.enum(["sellgold", "releasegold", "loangold"]),
     address: z.string().optional(),
     isVerified: z.boolean().default(false),
     isWhatsApp: z.boolean().default(false),

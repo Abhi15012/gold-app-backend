@@ -13,11 +13,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model userContact {
   id          String       @id @default(uuid())
   fullName    String
   CountryCode String
   mobile      String       @unique
+  customerType customerType
   address     String?
   createdAt   DateTime     @default(now())
   isVerified  Boolean      @default(true)
@@ -43,4 +45,10 @@ model addFavorite {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   userContact userContact @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum customerType {
+  sellgold
+  releasegold
+  loangold
 }

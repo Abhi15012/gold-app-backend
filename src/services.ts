@@ -71,6 +71,7 @@ export const createUserContact = async (data: userContactType) => {
       fullName: data.fullName,
       CountryCode: data.CountryCode,
       mobile: data.mobile,
+      customerType: data.customerType,
       address: data.address,
       isVerified: data.isVerified,
       isWhatsApp: data.isWhatsApp,
